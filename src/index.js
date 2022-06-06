@@ -3,12 +3,15 @@ import ReactDOM from 'react-dom/client';
 import './css/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter } from 'react-router-dom'; // importing the router component so that we can wrap our App component in it, giving our app access to routing features
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // This is JSX - a templating language that is a blend of JavaScript and HTML
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
 

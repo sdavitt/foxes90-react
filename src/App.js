@@ -2,18 +2,16 @@ import './css/App.css';
 // need curly brackets if importing a single function
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
+// imports for routing
+import { Routes, Route } from 'react-router-dom';
+import Home from './views/Home';
+import Shop from './views/Shop';
 
 function App() {
   /* JavaScript code inside of the function to configure the component/manage state/listen for events */
   // how do I create state variables?
   // by using the State Hook - initial value of the state variable is provided with the input to the useState hook
-  const [count, setCount] = useState(0);
   const [students, setStudents] = useState(['Sven', 'Donovan', 'Tyler', 'Craig', 'Yasir', 'DeVante', 'Jose', 'Brandon', 'Kristen', 'Nadia']);
-
-  const changeCounter = () => {
-    console.log('current count:' + count);
-    setCount(count + 1);
-  }
 
   const shuffleStudents = () => {
     console.log('shuffling...')
@@ -33,14 +31,13 @@ function App() {
   Always remember to change HTML class attribute to className for JSX
   */
   return (
-    <div className="App">
-      <Navbar studentsFromApp={students} setStudentsFromApp={setStudents}/>
-      {console.log('Hello, Foxes!')}
-      <h1 className='counter'>{count}</h1>
-      <button onClick={changeCounter}>Change Count</button>
-      <h1 className='students'>{students}</h1>
-      <button onClick={shuffleStudents}>Shuffle Students</button>
-    </div>
+    <React.Fragment>
+      <Navbar />
+      <Routes>
+        <Route children path='/' element={<Home students={students} shuffleStudents={shuffleStudents} />} />
+        <Route children path='/shop' element={<Shop />} />
+      </Routes>
+    </React.Fragment>
   );
 }
 
