@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  // This is JSX - a templating language that is a blend of JavaScript and HTML
   <React.StrictMode>
     <App />
   </React.StrictMode>
