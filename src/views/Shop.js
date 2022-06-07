@@ -21,15 +21,23 @@ let Shop = () => {
     // set up state variable to store api data
     // the initial value being a callback function that calls a function that sets state is a way to provide the initial value for a state variable
     const [animals, setAnimals] = useState(() => { loadAnimalData(); });
+    const [msg, setMsg] = useState(false);
 
     // access our cart from our ContextProvider
-    const {cart, setCart} = useContext(DataContext);
+    const { cart, setCart } = useContext(DataContext);
 
     // function to add an animal to our cart:
     const adoptAnimal = animal => {
+        // before we add the new animal to our cart, do we have the inventory to do so?
+        // if we dont have more inventory than we have animals in the cart, don't allow the adoption
+        if (cart.items[animal.id] && cart.items[animal.id].quantity >= animal.inventory) {
+            setMsg(`Sorry, you're already planning to adopt all of the ${animal.name}!`);
+            return
+        }
+
         // add the animal to the cart - CANT DO THIS DIRECTLY - must mutate state through a copy
         // make a copy
-        let mutableCart = {...cart};
+        let mutableCart = { ...cart };
         // modify the copy
         // increase the size of the cart by one
         mutableCart.size++;
@@ -37,12 +45,13 @@ let Shop = () => {
         mutableCart.total += animal.price;
         // if the animal is already in the cart, increase its quantity
         mutableCart.items[animal.id] ?
-        mutableCart.items[animal.id].quantity++ :
-        // otherwise create the key:value pair for that animal with a quantity of one
-        mutableCart.items[animal.id] = {'obj': animal, 'quantity': 1}
+            mutableCart.items[animal.id].quantity++ :
+            // otherwise create the key:value pair for that animal with a quantity of one
+            mutableCart.items[animal.id] = { 'obj': animal, 'quantity': 1 }
         // console log for testing purposes
         console.log(mutableCart);
         // set the state
+        setMsg(`Thank you for adopting a ${animal.name}!`);
         setCart(mutableCart);
     }
 
@@ -51,6 +60,10 @@ let Shop = () => {
         <div className='container'>
             <div className='row justify-content-center'>
                 <h1>Foxes Animal Market</h1>
+
+            </div>
+            <div className='row justify-content-center'>
+                {msg ? <h3>{msg}</h3> : null}
             </div>
             <div className='row justify-content-center'>
                 {/* write a conditional to check whether or not our animals have loaded */}
@@ -69,7 +82,11 @@ let Shop = () => {
                         </ul>
                         <div className="card-body">
                             <p className="card-link float-left">${animal.price}</p>
-                            <button onClick={()=>{adoptAnimal(animal)}} className="float-right btn btn-sm btn-info">Adopt!</button>
+                            {animal.inventory < 1 ?
+                                <button disabled className="float-right btn btn-sm btn-info">Out of stock</button>
+                                :
+                                <button onClick={() => { adoptAnimal(animal) }} className="float-right btn btn-sm btn-info">Adopt!</button>
+                            }
                         </div>
                     </div>
                 })

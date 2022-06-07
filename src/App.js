@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import { Routes, Route } from 'react-router-dom';
 import Home from './views/Home';
 import Shop from './views/Shop';
+import Cart from './views/Cart';
 
 function App() {
   /* JavaScript code inside of the function to configure the component/manage state/listen for events */
@@ -36,6 +37,7 @@ function App() {
       <Routes>
         <Route children path='/' element={<Home students={students} shuffleStudents={shuffleStudents} />} />
         <Route children path='/shop' element={<Shop />} />
+        <Route children path='/cart' element={<Cart />} />
       </Routes>
     </React.Fragment>
   );
