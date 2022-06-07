@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from 'react';
 
-let Home = props => {
+let Home = ({students, shuffleStudents}) => {
     // we want to explore utilizing data from an API here on our homepage
     // async process responsible for making the API call
     // we want that async process to end in mutating state rather than changing html
@@ -27,18 +27,19 @@ let Home = props => {
         // 1. By default, runs every time the component is rendered or updated
         // alternatively, you can declare a "dependency array" of state variables that control when the useEffect hook runs
             // an empty dependency array causes the useEffect to run only when the component initially renders
-    useEffect(() => {loadCatFact();}, [props.students]);
     // the useEffect hook is the modern equivalent of class-based react functions componentDidMount() and componentDidUpdate()
         // allows us to run code as a result of changes in component lifecycle (renders/rerenders)
+    useEffect(() => {loadCatFact();}, [students]);
+    // our goal here was to grab a new cat fact every time our students state variable changed
 
     return (
         <div className="container mt-2">
             <div className='row'>
                 {console.log('Hello, Foxes!')}
-                <button className='btn btn-block btn-info' onClick={props.shuffleStudents}>Shuffle Student</button>
+                <button className='btn btn-block btn-info' onClick={shuffleStudents}>Shuffle Student</button>
             </div>
             <div className="row justify-content-center">
-                <h1>{props.students[0]}'s Favorite CatFact:</h1>
+                <h1>{students[0]}'s Favorite CatFact:</h1>
             </div>
             <div className="row justify-content-center">
                 <h3>{catfact}</h3>
