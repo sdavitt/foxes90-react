@@ -1,8 +1,13 @@
 import '../css/cartstyles.css'
 import { useContext, useState } from 'react';
 import { DataContext } from '../DataProvider';
+import { useDatabase, useUser } from 'reactfire';
+import { set, ref } from 'firebase/database';
 
 let Cart = () => {
+    // access user and database systems
+    const {data: user} = useUser();
+    const db = useDatabase();
 
     const { cart, setCart } = useContext(DataContext);
     const [msg, setMsg] = useState(false);
@@ -30,6 +35,10 @@ let Cart = () => {
         mutableCart.total += animal.obj.price;
         // increase the quantity of that animal in the cart.items
         mutableCart.items[animal.obj.id].quantity++;
+        // right before we change the state of the local cart, IF there is a user, change the database cart to match!
+        if (user) {
+            set(ref(db, 'carts/' + user.uid), mutableCart);
+        }
         // set state
         setCart(mutableCart);
         setMsg(false);
@@ -49,6 +58,10 @@ let Cart = () => {
         mutableCart.items[animal.obj.id].quantity > 1 ?
             mutableCart.items[animal.obj.id].quantity-- :
             delete mutableCart.items[animal.obj.id];
+        // right before we change the state of the local cart, IF there is a user, change the database cart to match!
+        if (user) {
+            set(ref(db, 'carts/' + user.uid), mutableCart);
+        }
         // set state
         setCart(mutableCart);
         setMsg(false);
@@ -65,6 +78,10 @@ let Cart = () => {
         mutableCart.total -= animal.obj.price * mutableCart.items[animal.obj.id].quantity;
         // remove the animal from cart.items
         delete mutableCart.items[animal.obj.id];
+        // right before we change the state of the local cart, IF there is a user, change the database cart to match!
+        if (user) {
+            set(ref(db, 'carts/' + user.uid), mutableCart);
+        }
         // set state
         setCart(mutableCart);
         setMsg(false);
@@ -74,6 +91,10 @@ let Cart = () => {
         // set the cart back to empty
         // create a new entirely empty cart
         let newCart = { items: {}, total: 0, size: 0 };
+        // right before we change the state of the local cart, IF there is a user, change the database cart to match!
+        if (user) {
+            set(ref(db, 'carts/' + user.uid), null);
+        }
         // set state to that new cart
         setCart(newCart);
         setMsg(false);

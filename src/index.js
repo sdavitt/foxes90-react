@@ -9,6 +9,7 @@ import { FirebaseAppProvider } from 'reactfire';
 const firebaseConfig = {
   apiKey: "AIzaSyCanqikPGnKfG1Rl-0GmTMyetZVp08XUpM",
   authDomain: "foxes90-pets.firebaseapp.com",
+  databaseURL: "https://foxes90-pets-default-rtdb.firebaseio.com",
   projectId: "foxes90-pets",
   storageBucket: "foxes90-pets.appspot.com",
   messagingSenderId: "344924194382",

@@ -1,16 +1,19 @@
 import { Link } from "react-router-dom";
-import { useState, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { DataContext } from '../DataProvider';
-import { useAuth, useUser } from 'reactfire';
+import { useAuth, useUser, useDatabase } from 'reactfire';
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { ref, child, get } from 'firebase/database';
 
 
 let Navbar = () => {
     // access auth provider with reactfire hook
     const auth = useAuth();
+    // access the db provider with reactfire hook
+    const db = useDatabase();
 
     // access cart context
-    const { cart } = useContext(DataContext);
+    const { cart, setCart } = useContext(DataContext);
 
     // access our current user object so that we can design systems around whether or not a user is signed in
     const { status, data: user } = useUser();
@@ -26,7 +29,28 @@ let Navbar = () => {
     const signout = async () => {
         await signOut(auth);
         console.log('signed user out', user);
+        setCart({items: {}, total: 0, size: 0});
     }
+
+    // create a useEffect hook that runs a callback to query our database every time there is a change in our user object
+    // we want to check whether or not there is a cart for this user, and if there is, change the local cart to be the database cart
+    useEffect(() => {
+        if (user) {
+            // check the database for a user cart
+            get(child(ref(db), `carts/${user.uid}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    // if the cart exists in the database
+                    console.log(snapshot.val());
+                    // set the local state cart to the same value
+                    setCart(snapshot.val());
+                } else {
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+    }, [user]);
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">

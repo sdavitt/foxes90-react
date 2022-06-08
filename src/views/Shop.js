@@ -1,6 +1,8 @@
 import { useState, useContext } from 'react';
 import { DataContext } from '../DataProvider';
 import axios from 'axios';
+import { useUser, useDatabase } from 'reactfire';
+import { set, ref } from 'firebase/database';
 
 let Shop = () => {
     /* retrieve our products from our flask API */
@@ -25,6 +27,9 @@ let Shop = () => {
 
     // access our cart from our ContextProvider
     const { cart, setCart } = useContext(DataContext);
+    // access firebase systems
+    const {data: user} = useUser();
+    const db = useDatabase();
 
     // function to add an animal to our cart:
     const adoptAnimal = animal => {
@@ -50,6 +55,10 @@ let Shop = () => {
             mutableCart.items[animal.id] = { 'obj': animal, 'quantity': 1 }
         // console log for testing purposes
         console.log(mutableCart);
+        // mutate db right before setting local state
+        if (user) {
+            set(ref(db, 'carts/' + user.uid), mutableCart);
+        }
         // set the state
         setMsg(`Thank you for adopting a ${animal.name}!`);
         setCart(mutableCart);
