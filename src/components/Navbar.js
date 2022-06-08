@@ -1,19 +1,32 @@
 import { Link } from "react-router-dom";
 import { useState, useContext } from 'react';
 import { DataContext } from '../DataProvider';
+import { useAuth, useUser } from 'reactfire';
+import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 
 
 let Navbar = () => {
-
-    const [count, setCount] = useState(0);
-
-    const changeCounter = () => {
-        console.log('current count:' + count);
-        setCount(count + 1);
-    }
+    // access auth provider with reactfire hook
+    const auth = useAuth();
 
     // access cart context
     const { cart } = useContext(DataContext);
+
+    // access our current user object so that we can design systems around whether or not a user is signed in
+    const { status, data: user } = useUser();
+
+    // sign-in function
+    const signin = async () => {
+        const provider = new GoogleAuthProvider();
+        let u = await signInWithPopup(auth, provider);
+        console.log(u);
+    }
+
+    // sign-out function
+    const signout = async () => {
+        await signOut(auth);
+        console.log('signed user out', user);
+    }
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -34,9 +47,25 @@ let Navbar = () => {
                     </li>
                 </ul>
                 <ul className="navbar-nav ml-auto align-items-center">
-                    <li className="nav-item">
-                        <p className="nav-link m-0">Welcome!</p>
-                    </li>
+                    {/* A conditional structure based on whether or not we have a signed-in user */}
+                    {status === 'loading' ?
+                        <li className="nav-item">
+                            <p className="nav-link m-0">Logging in...</p>
+                        </li>
+                        : user ?
+                            <>
+                                <li className="nav-item">
+                                    <p className="nav-link m-0">Welcome, {user.displayName}!</p>
+                                </li>
+                                <li className="nav-item">
+                                    <button className="btn btn-sm btn-info mr-2" onClick={signout}>Sign out</button>
+                                </li>
+                            </>
+                            :
+                            <li className="nav-item">
+                                <button className="btn btn-sm btn-info mr-2" onClick={signin}>Sign in</button>
+                            </li>
+                    }
                     <li className="nav-item">
                         {cart.size === 0 ?
                             <Link className="btn btn-sm btn-info" to='/shop'><i className="fa fa-shopping-cart mr-2"></i>Adopt a Pet</Link>
