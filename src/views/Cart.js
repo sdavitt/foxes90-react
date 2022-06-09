@@ -3,6 +3,7 @@ import { useContext, useState } from 'react';
 import { DataContext } from '../DataProvider';
 import { useDatabase, useUser } from 'reactfire';
 import { set, ref } from 'firebase/database';
+import { Link } from 'react-router-dom';
 
 let Cart = () => {
     // access user and database systems
@@ -150,7 +151,7 @@ let Cart = () => {
                         </div>
                     </div>
                     <div className="d-flex flex-row align-items-center mt-3 p-2 bg-white rounded">
-                        <button className="btn btn-warning btn-block btn-lg ml-2 pay-button" type="button" disabled={cart.size === 0 ? true : false}>Checkout</button>
+                        <Link to='/checkout' className="btn btn-warning btn-block btn-lg ml-2 pay-button" type="button" disabled={cart.size === 0 ? true : false}>Checkout</Link>
                     </div>
                 </div>
             </div>
