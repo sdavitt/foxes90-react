@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { DataContext } from '../DataProvider';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import PurchaseConfirm from './PurchaseConfirm';
 
 
 const CheckoutForm = () => {
@@ -20,6 +21,8 @@ const CheckoutForm = () => {
     const [showPay, setShowPay] = useState(true); // controls whether or not payment form is submissible
     const [showForm, setShowForm] = useState(true); // controls whether or not the payment form is shown
     const [errorMessage, setErrorMessage] = useState('');
+    const [confirmData, setConfirmData] = useState();
+    const { cart, setCart } = useContext(DataContext);
 
     // rather than using a useEffect hook tied to changes in Stripe, I'm just gonna use a handleSubmit function
     // handlePay -> means the form has been submitted and we want to do our api call to stripe and handle communication with the stripe servers
@@ -39,12 +42,17 @@ const CheckoutForm = () => {
             setErrorMessage(data['error']['message']); // if there is an error, set the message as our error message state var
             setShowForm('error');
         } else {
+            //console.log(data.paymentIntent.id.slice(3));
+            // access the ID to create our confirmation number
+            setConfirmData({ 'cart': cart, 'num': data.paymentIntent.id.slice(3) })
             // payment succeeded
             setShowForm(false);
+            // clear the cart because the payment succeeded
+            setCart({ items: {}, total: 0, size: 0 });
         }
     }
     return (
-        <div className="row mt-4 justify-content-center">
+        <>
             { // large conditional structure for controlling if the form is shown, or an error is shown, or a confirmation is shown
                 showForm === true ?
                     <form id="payment-form" onSubmit={handlePay}>
@@ -58,10 +66,9 @@ const CheckoutForm = () => {
                     : showForm === 'error' ?
                         <div id="payment-message">There was an error processing your payment: {errorMessage}</div>
                         : // implying showForm is false -> our payment has succeeded and we want to show our confirmation page
-                        <h1>Success!</h1>
+                        <PurchaseConfirm confirmData={confirmData} />
             }
-
-        </div>
+        </>
     )
 
 }
